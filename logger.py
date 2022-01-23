@@ -1,30 +1,37 @@
 import socket
 import sys
  
-# Set up a TCP/IP server
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+port = int(sys.argv[1])
  
-# Bind the socket to server address and port 81
-server_address = ('localhost', 8080)
+server_address = ('localhost', port)
 tcp_socket.bind(server_address)
  
-# Listen on port 81
 tcp_socket.listen(1)
  
 while True:
     print("Waiting for connection")
     connection, client = tcp_socket.accept()
+
+    print(client)
  
     try:
         print("Connected to client IP: {}".format(client))
          
-        # Receive and print data 32 bytes at a time, as long as the client is sending something
         while True:
-            data = connection.recv(1000)
-            print("Received data: {}".format(data))
+            data = connection.recv(1000).decode("utf-8")
+
+            parts = data.split('\n')
+            
+            if parts[0] == "c" and len(parts) > 2:
+                print(parts[1] + " - " + parts[2] + " connected")
+            else:
+                print(data[:-1])
+
  
             if not data:
                 break
  
-    finally:
+    except Exception:
         connection.close()
