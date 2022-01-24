@@ -11,14 +11,16 @@ port = int(sys.argv[3])
 
 # Create a connection to the server application on port 81
 tcp_socket = socket.create_connection((ip_addr, port))
-data = bytes("c\n" + str(time.time()) + "\n" + node_name, 'utf-8')
+
+# Format for all data: [<time> <nodename> <[c\n OR hash]>]
+data = bytes(str(time.time()) + "\n" + node_name + "\nc", 'utf-8')
 tcp_socket.send(data)
  
 try:
     for line in sys.stdin:
         print(line)
         parts = line.split(' ')
-        data = bytes(parts[0] + " " + node_name + " " + parts[1], 'utf-8')
+        data = bytes(parts[0] + "\n" + node_name + "\n" + parts[1], 'utf-8')
         tcp_socket.send(data)
  
 finally:
