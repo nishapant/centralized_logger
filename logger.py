@@ -18,9 +18,10 @@ def run_server(server_port):
     tcp_socket.bind(server_address)
     
     tcp_socket.listen(MAX_NODES)
-    
+
+    print("Nodes can now be connected...")
+
     while True:
-        print("Waiting for connection...")
         connection, client = tcp_socket.accept()
 
         node_ip = client[0]
