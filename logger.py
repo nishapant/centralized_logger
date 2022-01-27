@@ -21,7 +21,7 @@ def run_server(server_port):
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
 
-    server_address = (localhost, server_port)
+    server_address = (local_ip, server_port)
     tcp_socket.bind(server_address)
     
     tcp_socket.listen(MAX_NODES)
