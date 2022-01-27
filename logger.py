@@ -1,6 +1,8 @@
 import socket
 import sys
 import time
+import signal
+
 from threading import Thread, Lock
 
 # Statics 
@@ -9,12 +11,17 @@ MAX_NODES = 8 # as specified in documentation
 # Data
 node_metadata = {} 
 node_data = {}
+thread_list = []
+shutdown = False
 
 def run_server(server_port):
     # Run 
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
-    server_address = ('localhost', server_port)
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+
+    server_address = (localhost, server_port)
     tcp_socket.bind(server_address)
     
     tcp_socket.listen(MAX_NODES)
@@ -28,12 +35,15 @@ def run_server(server_port):
         node_port = client[1]
     
         t = Thread(target=connect_node, args=(connection, node_ip, node_port,))
+        thread_list.append(t)
         t.start()
 
 def connect_node(connection, node_ip, node_port):
+    node_name = ""
+
     try:
         # print("Connected to client IP: {}".format(client))
-        while True:
+        while True and shutdown == False:
             data = connection.recv(1000).decode("utf-8")
 
             parts = data.split('\n')
@@ -48,7 +58,7 @@ def connect_node(connection, node_ip, node_port):
                 print(start_time + " " + node_name + " " + hash_val)
 
             # Store info in dictionaries
-            end_time = time.time() 
+            end_time = str(time.time())
             
             if (node_name, node_ip) not in node_metadata:
                 node_metadata[(node_name, node_ip)] = node_port 
@@ -66,7 +76,29 @@ def connect_node(connection, node_ip, node_port):
                 break
 
     except Exception:
+        curr_time = str(time.time())
+        print(curr_time + " - " + node_name + " disconnected")
+        print(node_metadata)
+        print(node_data)
+
         connection.close()
+
+
+
+### THIS IS JUST FOR EXIT HANDLING so the error doesnt appear and we can terminate the threads
+
+def handler(signum, frame):
+    print("Join threads...")
+    shutdown = True
+    print(len(thread_list))
+    for thread in thread_list:
+        thread.join()
+
+    print("Server shutdown...")
+    exit(0)
+
+signal.signal(signal.SIGINT, handler)
+
 
 if __name__  == "__main__":
     server_port = int(sys.argv[1])

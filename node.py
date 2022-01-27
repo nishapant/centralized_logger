@@ -13,16 +13,20 @@ port = int(sys.argv[3])
 tcp_socket = socket.create_connection((ip_addr, port))
 
 # Format for all data: [<time> <nodename> <[c\n OR hash]>]
-data = bytes(str(time.time()) + "\n" + node_name + "\nc", 'utf-8')
-tcp_socket.send(data)
- 
+data = str(time.time()) + "\n" + node_name + "\nc\n"
+data_bytes = bytes(data, 'utf-8')
+tcp_socket.send(data_bytes)
+
+# TODO: We need to wait or something for connection then start sending the lines
+time.sleep(2)
+
 try:
     for line in sys.stdin:
-        print(line)
         parts = line.split(' ')
+        print("node:", parts)
         data = bytes(parts[0] + "\n" + node_name + "\n" + parts[1], 'utf-8')
         tcp_socket.send(data)
- 
+
 finally:
     print("Closing socket")
     tcp_socket.close()
