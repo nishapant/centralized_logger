@@ -44,12 +44,11 @@ def connect_node(connection, node_ip, node_port):
     node_name = ""
 
     try:
-        # print("Connected to client IP: {}".format(client))
         while True and shutdown == False:
             while shutdown != True:
                 data = connection.recv(1000).decode("utf-8")
                 break 
-
+            
             parts = data.split('\n')
             start_time = parts[0]
             node_name = parts[1]
@@ -67,7 +66,9 @@ def connect_node(connection, node_ip, node_port):
             if (node_name, node_ip) not in node_metadata:
                 node_metadata[(node_name, node_ip)] = node_port 
             
-            data_point = (start_time, end_time, hash_val)
+            
+            len_message = len(bytes(data, 'utf-8')) * 8
+            data_point = (start_time, end_time, len_message)
 
             if node_name not in node_data:
                 node_data[node_name] = [data_point]
@@ -82,8 +83,8 @@ def connect_node(connection, node_ip, node_port):
     except Exception:
         curr_time = str(time.time())
         print(curr_time + " - " + node_name + " disconnected")
-        print(node_metadata)
-        print(node_data)
+        # print(node_metadata)
+        # print(node_data)
 
         connection.close()
 
