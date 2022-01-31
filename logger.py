@@ -2,6 +2,7 @@ import socket
 import sys
 import time
 import signal
+import os
 
 from threading import Thread, Lock
 
@@ -20,6 +21,7 @@ def run_server(server_port):
     
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
+    print(local_ip)
 
     server_address = (local_ip, server_port)
     tcp_socket.bind(server_address)
@@ -44,7 +46,9 @@ def connect_node(connection, node_ip, node_port):
     try:
         # print("Connected to client IP: {}".format(client))
         while True and shutdown == False:
-            data = connection.recv(1000).decode("utf-8")
+            while shutdown != True:
+                data = connection.recv(1000).decode("utf-8")
+                break 
 
             parts = data.split('\n')
             start_time = parts[0]
@@ -90,7 +94,7 @@ def connect_node(connection, node_ip, node_port):
 def handler(signum, frame):
     print("Join threads...")
     shutdown = True
-    print(len(thread_list))
+    print(thread_list)
     for thread in thread_list:
         thread.join()
 
