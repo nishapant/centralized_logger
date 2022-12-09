@@ -9,7 +9,7 @@ import sys
 if len(sys.argv) > 1:
     rate = float(sys.argv[1])
 else:
-    rate = 1.0          # default rate: 1 Hz
+    rate = 1.0
 
 if len(sys.argv) > 2:
     max_events = int(sys.argv[2])
