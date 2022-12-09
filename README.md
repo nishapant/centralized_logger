@@ -1,2 +1,2 @@
-# CS425 - MP0
+# Centralized Logger
 
