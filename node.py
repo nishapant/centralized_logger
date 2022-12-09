@@ -1,9 +1,6 @@
 import socket
 import sys
 import time
-# node_name = sys.argv[0] if sys.argv[0] else "node1"
-# ip_addr = sys.argv[1] if sys.argv[1] else "localhost"
-# port = int(sys.argv[2]) if sys.argv[2] else 8080
 
 node_name = sys.argv[1]
 ip_addr = sys.argv[2]
@@ -17,7 +14,6 @@ data = str(time.time()) + "\n" + node_name + "\nc\n"
 data_bytes = bytes(data, 'utf-8')
 tcp_socket.send(data_bytes)
 
-# TODO: We need to wait or something for connection then start sending the lines
 time.sleep(2)
 
 try:
